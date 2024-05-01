@@ -3,7 +3,7 @@
 
 void setup() {
   Serial.begin(115200);
-  pinMode(TRIGGER_PIN, OUTPUT);
+  pinMode(TRIGGER_PIN, INPUT);
   pinMode(ECHO_PIN, INPUT);
 }
 
