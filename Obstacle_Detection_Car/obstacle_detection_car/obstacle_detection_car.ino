@@ -12,6 +12,7 @@
 #define MOTOR_A_BACKWARD_SPEED 0xC1
 #define MOTOR_B_BACKWARD_SPEED 0xC9
 #define SPEED_VALUE 0x40 // Example: 50% speed
+#define SPEED_VALUE_MOTOR_A 0x60
 #define STOP_VALUE 0x00
 
 // Define the SoftwareSerial object
@@ -48,21 +49,28 @@ void loop()
   Serial.print(distance);
   Serial.println(" cm");
   // If distance > 20, move forward.
-  if (distance > 20)
+  if (distance > 50)
     {
       trexSerial.write(MOTOR_A_FORWARD_SPEED);
-      trexSerial.write(SPEED_VALUE);
+      trexSerial.write(SPEED_VALUE_MOTOR_A);
       trexSerial.write(MOTOR_B_FORWARD_SPEED);
       trexSerial.write((SPEED_VALUE));
     }
   // If distance <= 20, turn right (for testing obstacle detection)
-  else if(distance<=20)
+  else if(distance<=50)
     {
-      trexSerial.write(MOTOR_A_FORWARD_SPEED);
+      trexSerial.write(MOTOR_A_BACKWARD_SPEED);
+      trexSerial.write(SPEED_VALUE_MOTOR_A);
+      trexSerial.write(MOTOR_B_BACKWARD_SPEED);
       trexSerial.write(SPEED_VALUE);
+      delay(500);
+      trexSerial.write(MOTOR_A_FORWARD_SPEED);
+      trexSerial.write(0x80);
       trexSerial.write(MOTOR_B_FORWARD_SPEED);
-      trexSerial.write((uint8_t)STOP_VALUE);
+      trexSerial.write((uint8_t)0x40);
+      delay(2000);
       trexSerial.enableIntTx(true);
     }
+    
   delay(0);
 }
