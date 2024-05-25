@@ -6,6 +6,7 @@
 #define RX_PIN 16
 #define TRIGGER_PIN 12 // Pin connected to the trigger pin of the ultrasonic sensor
 #define ECHO_PIN 13    // Pin connected to the echo pin of the ultrasonic sensor
+#define RELAY_PIN 14   // Pin connected to relay.
 
 // Define the motor control commands including speed value
 #define MOTOR_A_FORWARD 0xC2
@@ -109,7 +110,9 @@ void turnCar()
   moveLeft();
   delay(2000);
   moveRight();
-  delay(2000);
+  delay(10);
+  // delay(2000);
+  // stopCar();
 }
 
 void setup() {
@@ -120,6 +123,7 @@ void setup() {
   pinMode(TRIGGER_PIN, OUTPUT);
   pinMode(TX_PIN, OUTPUT);
   pinMode(2, OUTPUT);
+  pinMode(RELAY_PIN, OUTPUT);
   // INPUTS
   pinMode(ECHO_PIN, INPUT);
   pinMode(RX_PIN, INPUT);
@@ -130,6 +134,7 @@ void setup() {
   // INITIALIZATION
   fireState = IDLE;
   distantFireState = DISTANT_IDLE;
+  digitalWrite(RELAY_PIN, HIGH);
 }
 
 bool foundObstacle()
@@ -193,11 +198,11 @@ void updateDistantFireState()
       // if (currentTime - lastFireStateChange < 2000)
       // {
         moveForward();
-        delay(500);
+        //delay(500);
       // }
       // else
       // {
-        stopCar();
+        //stopCar();
         distantFireState = DISTANT_IDLE;
       // }  
       break;
@@ -224,7 +229,6 @@ void updateFireState()
       fireState = STOP_CAR;
       lastFireStateChange = currentTime;
       break;
-
     case STOP_CAR:
       Serial.println("IN STOP");
       stopCar();
@@ -235,6 +239,7 @@ void updateFireState()
     case ENABLE_PUMP:
       Serial.println("IN EN PUMP");
       digitalWrite(2, HIGH);
+      digitalWrite(RELAY_PIN, LOW);
       fireState = TURN_SERVO;
       lastFireStateChange = currentTime;
       break;
@@ -248,7 +253,6 @@ void updateFireState()
         lastFireStateChange = currentTime;
       // }
       break;
-
     case WAIT:
       Serial.println("IN WAIT");
       // if (currentTime - lastFireStateChange >= waitDuration)
@@ -257,10 +261,10 @@ void updateFireState()
         lastFireStateChange = currentTime;
       // }
       break;
-
     case DISABLE_PUMP:
       Serial.println("IN DIS PUMP");
       digitalWrite(2, LOW);
+      digitalWrite(RELAY_PIN, HIGH);
       fireState = IDLE;
       break;
   }
@@ -300,5 +304,6 @@ void loop() {
     digitalWrite(2, LOW);
     fireState = IDLE;
     distantFireState = DISTANT_IDLE;
+    stopCar();
   }
 }
